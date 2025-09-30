@@ -7,7 +7,14 @@ I think it is clear enough why this kind of testing matters. Malicious attacks, 
 
 
 ## History
+Looking on the [Wikipedia page for Chaos Engineering](https://en.wikipedia.org/wiki/Chaos_engineering), it appears that chaos testing had some use before Netflix popularized it. Early instances in the 80s and 90s seemed to mostly focus on the workings of a program on a single computer, with examples given of Apple using a program to generate random user input in their programs. It wasn't until Amazon and Google began chaos testing in the early 2000s that chaos testing focused on system failure for web services. 
 
-## Methodology
+Then, in 2011, Netflix implemented chaos testing as they switched to a cloud based service. From what I can find from the article linked in the chaos testing topic instruction, it seems that they started off with a simple chaos monkey taking systems down. Then, once they saw success in that, it seems they began expanding their chaos testing to more areas, creating what they refer to as "a simian army", programs that conduct chaos testing in various areas. For example, Chaos Gorilla simulates outages in an AWS zone, while Chaos Kong simulates outages in a whole region.
+
+## Principles
+
+## Implementing Chaos Testing
+
+Searching on the internet, I found that Netflix has made their Chaos Monkey software available for public use, hosting it in a public github repository [here](https://github.com/Netflix/chaosmonkey)
 
 ## Connection to DevOps
