@@ -13,8 +13,20 @@ Then, in 2011, Netflix implemented chaos testing as they switched to a cloud bas
 
 ## Principles
 
+As part of my research, I found a [page](https://principlesofchaos.org/) detailing some of the principles of chaos engineering. A summary of these principles is:
+* Focus on metrics, rather than the internal processes, when doing chaos testing. For example, rather than testing how exactly the code reroutes traffic if a server is down, latency should be measured to ensure it's still in a reasonable timeframe
+* Focus your testing around things that can reasonably happen in the real world
+* Prioritize your tests based on what fail states are most likely to occur
+* Run chaos tests in the production environment, rather than development environments. This ensures the tests are accurate
+* Minimize user impact. Though it's important to be doing chaos testing in production, which means users will be negatively impacted, this should be kept to a mininum. I saw an analogy of chaos testing being like like puncturing your tire while your car is at home to ensure you'd be able to replace it on the road. In line with that analogy, chaos testing should be performed in low impact times and locations, so that there is a reduced impact if the testing does fail.
+* Automation. Less toil, just like the catchphrase of the class! There are softwares, such as Chaos Monkey, which can automatically perform chaos tests
+
 ## Implementing Chaos Testing
 
-Searching on the internet, I found that Netflix has made their Chaos Monkey software available for public use, hosting it in a public github repository [here](https://github.com/Netflix/chaosmonkey)
+Searching on the internet, I found that Netflix has made their Chaos Monkey software available for public use, hosting it in a public github repository [here](https://github.com/Netflix/chaosmonkey).
+
+According to the readme, this software requires integration with another piece of software called [Spinnaker](https://spinnaker.io/). It seems to be capable of integration with AWS. There is a guide for how to do this on [this page](https://spinnaker.io/docs/setup/other_config/triggers/amazon/)
+
+**ADD SUMMARY OF PAGE, AND THEN USING CHAOS MONKEY WITH SPINNAKER**
 
 ## Connection to DevOps
