@@ -320,15 +320,21 @@ test('purchase with login', async ({ page }) => {
   // Go to order page
   await page.getByRole('button', { name: 'Order now' }).click();
 
-  // Create order
-  await expect(page.locator('h2')).toContainText('Awesome is a click away');
+  // Wait for page load
+  await page.waitForSelector('h2:has-text("Awesome is a click away")');
+
+  // Wait for combobox to be ready
+  await page.waitForSelector('select:not([disabled])');
+
+  //order pizza
   await page.getByRole('combobox').selectOption('4');
   await page.getByRole('link', { name: 'Image Description Veggie A' }).click();
   await page.getByRole('link', { name: 'Image Description Pepperoni' }).click();
   await expect(page.locator('form')).toContainText('Selected pizzas: 2');
   await page.getByRole('button', { name: 'Checkout' }).click();
 
-    await page.getByPlaceholder('Email address').click();
+  //login
+  await page.getByPlaceholder('Email address').click();
   await page.getByPlaceholder('Email address').fill('d@jwt.com');
   await page.getByPlaceholder('Password').fill('a');
   await page.getByRole('button', { name: 'Login' }).click();
