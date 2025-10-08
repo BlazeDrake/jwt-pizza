@@ -359,7 +359,95 @@ test('bad pizza verification', async({page})=>{
 })
 
 test('updateUser', async ({ page }) => {
+
+  //data
   const email = `user${Math.floor(Math.random() * 10000)}@jwt.com`;
+  const newEmail = 'new-'+email;
+
+  //this is updated to reflect the current state of data
+  let mockEmail=email;
+  let mockName="pizza diner";
+
+  //mocks
+    await page.route('*/**/api/auth', async (route)=>{
+      const body=route.request().postDataJSON()
+      if(route.request().method()==="POST"){
+        const registerRes={
+          "user": {
+            "name": body.name,
+            "email": body.email,
+            "roles": [
+              {
+                "role": "diner"
+              }
+            ],
+            "id": 532
+          },
+          "token": "aTestToken"
+        }
+        await route.fulfill({ json: registerRes });
+      }
+      else if(route.request().method()==="PUT"){
+        const loginRes={
+          "user": {
+            "name": mockName,
+            "email": mockEmail,
+            "roles": [
+              {
+                "role": "diner"
+              }
+            ],
+            "id": 532
+          },
+          "token": "aTestToken"
+        }
+        await route.fulfill({ json: loginRes });        
+      }
+      else if(route.request().method()==="DELETE"){
+        const logoutRes={
+          "message": "logout successful"
+        }
+        await route.fulfill({ json: logoutRes });
+      }
+
+    })
+
+    await page.route('*/**/api/user/532', async (route)=>{
+
+        let body=route.request().postDataJSON();
+
+        mockName=body.name;
+        mockEmail=body.email
+
+        const updateRes={
+          "user": {
+            "name": mockName,
+            "email": mockEmail,
+            "roles": [
+              {
+                "role": "diner"
+              }
+            ],
+            "id": 532
+          },
+          "token": "aTestToken"
+        }
+
+        route.fulfill({json: updateRes})
+    })
+
+    await page.route('*/**/api/order', async (route)=>{
+      let orderRes={
+       "dinerId": 532,
+       "orders": [],
+       "page": 1
+      }
+
+      route.fulfill({json: orderRes});
+    })
+
+
+  //test
   await page.goto('/');
   await page.getByRole('link', { name: 'Register' }).click();
   await page.getByRole('textbox', { name: 'Full name' }).fill('pizza diner');
@@ -381,6 +469,7 @@ test('updateUser', async ({ page }) => {
   await page.getByRole('button', { name: 'Edit' }).click();
   await expect(page.locator('h3')).toContainText('Edit user');
   await page.getByRole('textbox').first().fill('pizza dinerx');
+  await page.getByRole('textbox').nth(1).fill(newEmail);
   await page.getByRole('button', { name: 'Update' }).click();
 
   await page.waitForSelector('[role="dialog"].hidden', { state: 'attached' });
@@ -389,13 +478,13 @@ test('updateUser', async ({ page }) => {
   
   await page.getByRole('link', { name: 'Logout' }).click();
   await page.getByRole('link', { name: 'Login' }).click();
-  
-  await page.getByRole('textbox', { name: 'Email address' }).fill(email);
+
+  await page.getByRole('textbox', { name: 'Email address' }).fill(newEmail);
   await page.getByRole('textbox', { name: 'Password' }).fill('diner');
   await page.getByRole('button', { name: 'Login' }).click();
-  
+
   await page.getByRole('link', { name: 'pd' }).click();
-  
+
   await expect(page.getByRole('main')).toContainText('pizza dinerx');
 });
 
