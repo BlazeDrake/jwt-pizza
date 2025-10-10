@@ -1,3 +1,4 @@
+import { Page } from '@playwright/test';
 import { test, expect } from 'playwright-test-coverage';
 
 
@@ -458,7 +459,7 @@ test('updateUser', async ({ page }) => {
   await page.getByRole('link', { name: 'pd' }).click();
 
   await expect(page.getByRole('main')).toContainText('pizza diner');
-
+    
   await page.getByRole('button', { name: 'Edit' }).click();
   await expect(page.locator('h3')).toContainText('Edit user');
   await page.getByRole('button', { name: 'Update' }).click();
@@ -487,4 +488,9 @@ test('updateUser', async ({ page }) => {
 
   await expect(page.getByRole('main')).toContainText('pizza dinerx');
 });
+
+async function setupUserMocks(page: Page){
+  //add mocks for getting users and deleting them. Read/write to a list for this
+  //also any other mocks needed (such as admin login, look at connections for this)
+}
 

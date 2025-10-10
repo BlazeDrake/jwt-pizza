@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import NotFound from './notFound';
 import Button from '../components/button';
 import { pizzaService } from '../service/service';
-import { Franchise, FranchiseList, Role, Store, User } from '../service/pizzaService';
+import { Franchise, FranchiseList, Role, Store, User, UserList } from '../service/pizzaService';
 import { TrashIcon } from '../icons';
 
 interface Props {
@@ -16,12 +16,23 @@ export default function AdminDashboard(props: Props) {
   const [franchiseList, setFranchiseList] = React.useState<FranchiseList>({ franchises: [], more: false });
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
+  const [userList,setUserList] = React.useState<UserList>({users:[],more:false})
+    const [userPage, setUserPage] = React.useState(0);
+
+
 
   React.useEffect(() => {
     (async () => {
       setFranchiseList(await pizzaService.getFranchises(franchisePage, 3, '*'));
     })();
   }, [props.user, franchisePage]);
+
+  React.useEffect(() => {
+    (async () => {
+      let users=await pizzaService.getUsers(franchisePage, 10, '*');
+      setUserList(users);
+    })();
+  }, [props.user, userPage]);
 
   function createFranchise() {
     navigate('/admin-dashboard/create-franchise');
@@ -44,6 +55,43 @@ export default function AdminDashboard(props: Props) {
     response = (
       <View title="Mama Ricci's kitchen">
         <div className="text-start py-8 px-4 sm:px-6 lg:px-8">
+          <div className= 'bg-white' style={{ padding: '20px', fontFamily: 'Arial' }}>
+                <h3 className="text-dark text-xl text-bold">Users</h3>
+                <table className="border border-black-500" cellPadding="8" cellSpacing="0" style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {userList.users.map((user, idx) => {
+                      let role=""
+                      if(user.roles&&user.roles[0]&&user.roles[0].role){
+                        role=user.roles[0].role;
+                      }
+                      return(
+                      <tr key={idx}>
+                        <td>{user.name}</td>
+                        <td>{user.email}</td>
+                        <td>{role}</td>
+                        <td><button className="hover:text-red-800">X</button></td>
+                      </tr>
+                    )})}
+                  </tbody>
+                </table>
+
+                <div style={{ marginTop: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
+                  <input className="border border-black-500 hover:border-blue-800" type="text" placeholder="Name" />
+                  <button className="border border-black-500 hover:border-blue-800">Search</button>
+                  <button className="border border-black-500 hover:border-blue-800">Prev</button>
+                  <button className="border border-black-500 hover:border-blue-800">Next</button>
+                </div>
+          </div>
+
           <h3 className="text-neutral-100 text-xl">Franchises</h3>
           <div className="bg-neutral-100 overflow-clip my-4">
             <div className="flex flex-col">
