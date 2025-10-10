@@ -17,7 +17,8 @@ export default function AdminDashboard(props: Props) {
   const [franchisePage, setFranchisePage] = React.useState(0);
   const filterFranchiseRef = React.useRef<HTMLInputElement>(null);
   const [userList,setUserList] = React.useState<UserList>({users:[],more:false})
-    const [userPage, setUserPage] = React.useState(0);
+  const [userPage, setUserPage] = React.useState(0);
+  const filterUsersRef = React.useRef<HTMLInputElement>(null);
 
 
 
@@ -29,7 +30,7 @@ export default function AdminDashboard(props: Props) {
 
   React.useEffect(() => {
     (async () => {
-      let users=await pizzaService.getUsers(franchisePage, 10, '*');
+      let users=await pizzaService.getUsers(userPage, 10, '*');
       setUserList(users);
     })();
   }, [props.user, userPage]);
@@ -48,6 +49,10 @@ export default function AdminDashboard(props: Props) {
 
   async function filterFranchises() {
     setFranchiseList(await pizzaService.getFranchises(franchisePage, 10, `*${filterFranchiseRef.current?.value}*`));
+  }
+
+  async function filterUsers(){
+    setUserList(await pizzaService.getUsers(userPage,10,`*${filterUsersRef.current?.value}`))
   }
 
   let response = <NotFound />;
@@ -85,11 +90,13 @@ export default function AdminDashboard(props: Props) {
                 </table>
 
                 <div style={{ marginTop: '20px', display: 'flex', gap: '10px', alignItems: 'center' }}>
-                  <input className="border border-black-500 hover:border-blue-800" type="text" placeholder="Name" />
-                  <button className="border border-black-500 hover:border-blue-800">Search</button>
-                  <button className="border border-black-500 hover:border-blue-800">Prev</button>
-                  <button className="border border-black-500 hover:border-blue-800">Next</button>
+                  <input ref={filterUsersRef} className="border border-black-500 hover:border-blue-800" type="text" placeholder="Name" />
+                  <button className="border border-black-500 hover:border-blue-800" onClick={filterUsers}>Search</button>
+                  <button className="border border-black-500 hover:border-blue-800" onClick={() => {setUserPage(userPage - 1);}} disabled={userPage <= 0}>Prev</button>
+                  <button className="border border-black-500 hover:border-blue-800" onClick={() => {setUserPage(userPage + 1);}} disabled={!userList.more}>Next</button>
                 </div>
+                
+
           </div>
 
           <h3 className="text-neutral-100 text-xl">Franchises</h3>
