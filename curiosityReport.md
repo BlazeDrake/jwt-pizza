@@ -25,8 +25,16 @@ As part of my research, I found a [page](https://principlesofchaos.org/) detaili
 
 Searching on the internet, I found that Netflix has made their Chaos Monkey software available for public use, hosting it in a public github repository [here](https://github.com/Netflix/chaosmonkey).
 
-According to the readme, this software requires integration with another piece of software called [Spinnaker](https://spinnaker.io/). It seems to be capable of integration with AWS. There is a guide for how to do this on [this page](https://spinnaker.io/docs/setup/other_config/triggers/amazon/)
+According to the readme, this software requires integration with another piece of software called [Spinnaker](https://spinnaker.io/). It seems to be capable of integration with AWS, and is the service Netflix uses for Chaos Monkey on their end. I was able to find a guide for installing spinnaker [here](https://spinnaker.io/docs/setup/install/), and a guide for setting Chaos Monkey up with it on [this page](https://netflix.github.io/chaosmonkey/How-to-deploy/). I will not go into those details here, but it seems like the process is relatively straightforward from a cursory readthrough of those articles.
 
-**ADD SUMMARY OF PAGE, AND THEN USING CHAOS MONKEY WITH SPINNAKER**
+## How Chaos Monkey works
+
+from the [official docs](https://netflix.github.io/chaosmonkey), I was able to learn a lot about how Chaos Monkey specifically works. The main process for it is to run a scheduled job every cron, which determines whether it will terminate a service that day. In its configuration, parameters for the probability of termination can be set. One of these parameters is the mean time between terminations in days, which is then applied to a geometric distribution. This means that the longer it has been since a termination, the more likely it is to happen, and terminations are unlikely to happen back to back. Additionally, you can set a mininum delay between terminations, which is used for if you want terminations to only happen on certain intervals, such as only once a day or week. Chaos Monkey uses an sql database to keep track of this config information, as well as information on previous terminations to use in its probability calculation.
+
+When Chaos Monkey does select an instance to terminate, it will choose from groups, which are set in the config. The groups can be set to be either each app as a group, each stack as a group, or each cluster as a group. There is also an option to determine whether an instance of a group is targeted in each region, or if only one instance can be triggered per group worldwide. 
+
+Finally, there seems to be a command line method to manually trigger a termination.
 
 ## Connection to DevOps
+
+Reading through the information on this, I can definitely see how it's related to devops. Tools such as Chaos Monkey align with the vision of seeking less toil through automation. This kind of testing also builds up confidence, just like the other forms of testing we have learned about. I am definitely excited for when we begin to learn how to apply chaos testing in class!
