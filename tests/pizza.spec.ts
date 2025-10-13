@@ -489,8 +489,201 @@ test('updateUser', async ({ page }) => {
   await expect(page.getByRole('main')).toContainText('pizza dinerx');
 });
 
-async function setupUserMocks(page: Page){
-  //add mocks for getting users and deleting them. Read/write to a list for this
-  //also any other mocks needed (such as admin login, look at connections for this)
+test('listUsers', async({page})=>{
+  await setupUserListTests(page);
+
+
+
+  //ensure first page is all right
+  await expect(page.getByRole('main')).toContainText('Name');
+  await expect(page.getByRole('main')).toContainText('Email');
+  await expect(page.getByRole('main')).toContainText('Role');
+  await expect(page.getByRole('main')).toContainText('????');
+  await expect(page.getByRole('main')).toContainText('a@jwt.com');
+  await expect(page.getByRole('main')).toContainText('admin');
+
+  await expect(page.getByRole('main')).toContainText('tests');
+  await expect(page.getByRole('main')).toContainText('nerd@nerd.com');
+
+  await expect(page.getByRole('main')).toContainText('hornet');
+  await expect(page.getByRole('main')).toContainText('h@jwt.com');
+
+  await expect(page.getByRole('main')).toContainText('creig');
+  await expect(page.getByRole('main')).toContainText('c@jwt.com');
+
+  await expect(page.getByRole('main')).toContainText('sherma');
+  await expect(page.getByRole('main')).toContainText('nuu');
+  await expect(page.getByRole('main')).toContainText('pizza diner');
+  await expect(page.getByRole('main')).toContainText('pizza franchisee');
+  await expect(page.getByRole('main')).toContainText('t');
+  await expect(page.getByRole('main')).toContainText('rng');
+
+  //ensure going forward works
+  await page.getByRole('button', { name: 'Next' }).click();
+  await expect(page.getByRole('main')).toContainText('lace');
+  await expect(page.getByRole('main')).toContainText('buxwvsbtj4@test.com');
+
+  //ensure going back works
+  await page.getByRole('button', { name: 'Prev' }).click();
+  await expect(page.getByRole('main')).toContainText('????');
+});
+
+test('deleteUsers', async({page})=>{
+  await setupUserListTests(page);
+
+
+
+  await page.getByRole('row', { name: 't t@jwt.com X' }).getByRole('button').click();
+  await expect(page.getByRole('main')).toContainText('lace');
+  await expect(page.getByRole('main')).toContainText('buxwvsbtj4@test.com');
+})
+
+async function setupUserListTests(page: Page){
+
+  //local storage of users for test purposes
+  let userList=[
+      {
+        "id": 1,
+        "name": "????",
+        "email": "a@jwt.com",
+        "roles": [
+          {
+            "role": "admin"
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "name": "tests",
+        "email": "nerd@nerd.com",
+        "roles": []
+      },
+      {
+        "id": 3,
+        "name": "hornet",
+        "email": "h@jwt.com",
+        "roles": []
+      },
+      {
+        "id": 4,
+        "name": "creig",
+        "email": "c@jwt.com",
+        "roles": [
+          {
+            "objectId": 1,
+            "role": "franchisee"
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "name": "sherma",
+        "email": "s@jwt.com",
+        "roles": []
+      },
+      {
+        "id": 6,
+        "name": "nuu",
+        "email": "n@jwt.com",
+        "roles": []
+      },
+      {
+        "id": 7,
+        "name": "pizza diner",
+        "email": "d@jwt.com",
+        "roles": []
+      },
+      {
+        "id": 8,
+        "name": "pizza franchisee",
+        "email": "g@jwt.com",
+        "roles": []
+      },
+      {
+        "id": 9,
+        "name": "t",
+        "email": "t@jwt.com",
+        "roles": []
+      },
+      {
+        "id": 10,
+        "name": "rng",
+        "email": "96ho9hl8kj@test.com",
+        "roles": []
+      },
+      {
+        "id": 11,
+        "name": "lace",
+        "email": "buxwvsbtj4@test.com",
+        "roles": []
+      }
+    ];
+
+
+  //Mocks
+  await page.route('*/**/api/auth', async (route)=>{
+    if(route.request().method()==="PUT"){
+      let adminLogin={
+        "user": {
+          "id": 1,
+          "name": "????",
+          "email": "a@jwt.com",
+          "roles": [
+            {
+              "role": "admin"
+            }
+          ]
+        },
+        "token": "aGoodToken"
+      }
+
+      route.fulfill({json: adminLogin})
+    }
+  })
+
+  await page.route('*/**/api/user*', async (route) => {
+
+    expect(route.request().method()).toBe('GET');
+
+    // Get the full URL including query parameters
+    const url = new URL(route.request().url());
+    
+    // Access specific query parameters
+    const page = parseInt(url.searchParams.get('page') || '0');
+    const limit = parseInt(url.searchParams.get('limit') || '10');
+    const name = url.searchParams.get('name') || '*';
+
+    let startVal=page*limit;
+    let endVal=startVal+limit;
+
+    // Create response based on query parameters
+    const response = {
+      users: userList.slice(startVal,endVal>userList.length?userList.length:endVal),
+      more: true
+    };
+
+    await route.fulfill({ json: response });
+  });
+
+  await page.route('*/**/api/user/9', async(route)=>{
+    expect(route.request().method()).toBe('DELETE');
+
+    if(userList.length>10){
+      userList = userList.filter((user)=>user.id!=9)
+    }
+
+    await route.fulfill({json: { message: 'user deleted' }})
+
+  })
+
+  //login admin
+
+  await page.goto('/');
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('coolPassword');
+  await page.getByRole('button', { name: 'Login' }).click();
+  await page.getByRole('link', { name: 'Admin' }).click();
 }
 

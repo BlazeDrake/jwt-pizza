@@ -99,6 +99,10 @@ type JWTPayload = {
   payload: string;
 };
 
+type DeletePayload={
+  message: string;
+}
+
 interface PizzaService {
   login(email: string, password: string): Promise<User>;
   register(email: string, password: string, role: string): Promise<User>;
@@ -117,6 +121,7 @@ interface PizzaService {
   closeStore(franchise: Franchise, store: Store): Promise<null>;
   docs(docType: string): Promise<Endpoints>;
   updateUser(user: User): Promise<User>;
+  deleteUser(id: String): Promise<DeletePayload>;
 }
 
-export { Role, PizzaService, User, UserList, Menu, Pizza, OrderHistory, Order, Franchise, FranchiseList, Store, OrderItem, Endpoint, Endpoints, OrderResponse, JWTPayload };
+export { Role, PizzaService, User, UserList, Menu, Pizza, OrderHistory, Order, Franchise, FranchiseList, Store, OrderItem, Endpoint, Endpoints, OrderResponse, JWTPayload, DeletePayload as deletePayload };

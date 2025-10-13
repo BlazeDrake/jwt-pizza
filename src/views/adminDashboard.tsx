@@ -6,6 +6,7 @@ import Button from '../components/button';
 import { pizzaService } from '../service/service';
 import { Franchise, FranchiseList, Role, Store, User, UserList } from '../service/pizzaService';
 import { TrashIcon } from '../icons';
+import { ref } from 'process';
 
 interface Props {
   user: User | null;
@@ -30,10 +31,14 @@ export default function AdminDashboard(props: Props) {
 
   React.useEffect(() => {
     (async () => {
-      let users=await pizzaService.getUsers(userPage, 10, '*');
-      setUserList(users);
+      await refreshPage();
     })();
   }, [props.user, userPage]);
+
+  async function refreshPage() {
+    let users = await pizzaService.getUsers(userPage, 10, `*${filterUsersRef.current?.value}`);
+    setUserList(users);
+  }
 
   function createFranchise() {
     navigate('/admin-dashboard/create-franchise');
@@ -52,7 +57,16 @@ export default function AdminDashboard(props: Props) {
   }
 
   async function filterUsers(){
-    setUserList(await pizzaService.getUsers(userPage,10,`*${filterUsersRef.current?.value}`))
+
+    setUserPage(0);
+    refreshPage();
+  }
+
+  async function deleteUser(id?: String){
+    if(id){
+      await pizzaService.deleteUser(id);
+      await refreshPage();
+    }
   }
 
   let response = <NotFound />;
@@ -83,7 +97,7 @@ export default function AdminDashboard(props: Props) {
                         <td>{user.name}</td>
                         <td>{user.email}</td>
                         <td>{role}</td>
-                        <td><button className="hover:text-red-800">X</button></td>
+                        <td><button className="hover:text-red-800" onClick={()=>deleteUser(user.id)}>X</button></td>
                       </tr>
                     )})}
                   </tbody>
