@@ -538,6 +538,92 @@ test('deleteUsers', async({page})=>{
   await expect(page.getByRole('main')).toContainText('buxwvsbtj4@test.com');
 })
 
+test('testFranchises',async ({page})=>{
+
+  let franchises=[
+        {
+            "id": 1139,
+            "name": "00z7zm28fb",
+            "admins": [
+                {
+                    "id": 1497,
+                    "name": "en3jf45gro",
+                    "email": "en3jf45gro@admin.com"
+                }
+            ],
+            "stores": []
+        },
+        {
+            "id": 559,
+            "name": "02pen8b6ja",
+            "admins": [
+                {
+                    "id": 621,
+                    "name": "kb6v7hbzb9",
+                    "email": "kb6v7hbzb9@admin.com"
+                }
+            ],
+            "stores": []
+        },
+        {
+            "id": 759,
+            "name": "0391yibome",
+            "admins": [
+                {
+                    "id": 868,
+                    "name": "syeg9kruet",
+                    "email": "syeg9kruet@admin.com"
+                }
+            ],
+            "stores": [{
+              id: 5,
+              name: "halfway home",
+              totalRevenue: 500
+            }]
+        }
+      ]
+
+  await page.route("*/**/api/franchise?page=0&limit=3&name=*", async(route)=>{
+    if(route.request().method()==="GET"){
+      route.fulfill({json: {franchises: franchises, more: true}})
+    }
+  })
+
+  await loginAdmin(page);
+
+  //test basic page elements
+  await expect(page.getByRole('main')).toContainText('Franchise');
+  await expect(page.getByRole('main')).toContainText('Franchisee');
+  await expect(page.getByRole('main')).toContainText('Store');
+  await expect(page.getByRole('main')).toContainText('Revenue');
+  await expect(page.getByRole('main')).toContainText('Action');
+  await expect(page.locator('tfoot')).toMatchAriaSnapshot(`- button "»"`);
+
+  //test list
+  await expect(page.getByRole('main')).toContainText('00z7zm28fb');
+  await expect(page.getByRole('main')).toContainText('02pen8b6ja');
+  await expect(page.getByRole('main')).toContainText('0391yibome');
+  await expect(page.getByRole('main')).toContainText('en3jf45gro');
+  await expect(page.getByRole('main')).toContainText('kb6v7hbzb9');
+  await expect(page.getByRole('main')).toContainText('syeg9kruet');
+
+  //test store display
+  await expect(page.getByRole('main')).toContainText('halfway home');
+  await expect(page.getByRole('main')).toContainText('500 ₿');
+
+  //test buttons
+  await page.getByRole('row', { name: '00z7zm28fb en3jf45gro Close' }).getByRole('button').click();
+  await expect(page.getByRole('heading')).toContainText('Sorry to see you go');
+  await expect(page.getByRole('main')).toContainText('Are you sure you want to close the 00z7zm28fb franchise? This will close all associated stores and cannot be restored. All outstanding revenue will not be refunded.');
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await page.getByRole('row', { name: 'halfway home 500 ₿ Close' }).getByRole('button').click();
+  await expect(page.getByRole('main')).toContainText('Are you sure you want to close the 0391yibome store halfway home ? This cannot be restored. All outstanding revenue will not be refunded.');
+  await expect(page.getByRole('heading')).toContainText('Sorry to see you go');
+  await page.getByRole('button', { name: 'Cancel' }).click();
+  await expect(page.locator('h2')).toContainText('Mama Ricci\'s kitchen');
+
+})
+
 async function setupUserListTests(page: Page){
 
   //local storage of users for test purposes
@@ -621,25 +707,6 @@ async function setupUserListTests(page: Page){
 
 
   //Mocks
-  await page.route('*/**/api/auth', async (route)=>{
-    if(route.request().method()==="PUT"){
-      let adminLogin={
-        "user": {
-          "id": 1,
-          "name": "????",
-          "email": "a@jwt.com",
-          "roles": [
-            {
-              "role": "admin"
-            }
-          ]
-        },
-        "token": "aGoodToken"
-      }
-
-      route.fulfill({json: adminLogin})
-    }
-  })
 
   await page.route('*/**/api/user*', async (route) => {
 
@@ -676,7 +743,31 @@ async function setupUserListTests(page: Page){
 
   })
 
-  //login admin
+  loginAdmin(page);
+
+
+}
+
+async function loginAdmin(page: Page){
+    await page.route('*/**/api/auth', async (route)=>{
+    if(route.request().method()==="PUT"){
+      let adminLogin={
+        "user": {
+          "id": 1,
+          "name": "????",
+          "email": "a@jwt.com",
+          "roles": [
+            {
+              "role": "admin"
+            }
+          ]
+        },
+        "token": "aGoodToken"
+      }
+
+      route.fulfill({json: adminLogin})
+    }
+  })
 
   await page.goto('/');
   await page.getByRole('link', { name: 'Login' }).click();
