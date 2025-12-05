@@ -56,7 +56,7 @@ Damon Stevens & Corwyn Giles
 | Classification | Sql injection                                                    |
 | Severity       | 0                                                                            |
 | Description    | Attempted to inject sql statements into the token with multiple requests. No effect  |
-| Corrections| |Sanitize inputs|
+| Corrections| Sanitize inputs|
 
 | Item           | Result                                                                         |
 | -------------- | ------------------------------------------------------------------------------ |
@@ -80,7 +80,7 @@ Damon Stevens & Corwyn Giles
 | Severity       | 4                                                                              |
 | Description    | User role not checked when deleting a franchise, allowing anyone to delete one with the right endpoint                                |
 | Corrections    | Add role checking to api/franchise/delete                                      |
-| Image| |
+| Image|<img width="1478" height="877" alt="Screenshot 2025-12-05 132827" src="https://github.com/user-attachments/assets/68a4085f-ec30-4b0a-8214-dd7009cb3469" /> |
 
 | Item           | Result                                                                         |
 | -------------- | ------------------------------------------------------------------------------ |
@@ -90,6 +90,8 @@ Damon Stevens & Corwyn Giles
 | Severity       | 4                                                                              |
 | Description    | User role not checked when deleting a user, allowing anyone to delete one with the right endpoint                                |
 | Corrections    | Add role checking to api/user/delete                                      |
+| Image |  <img width="1475" height="807" alt="image" src="https://github.com/user-attachments/assets/8d12749c-1ef7-4128-9fb0-34f36f8b404f" />|
+
 
 
 | Item           | Result                                                                         |
