@@ -68,6 +68,17 @@ Damon Stevens & Corwyn Giles
 
 ## Corwyn Giles
 
+
+| Item           | Result                                                                         |
+| -------------- | ------------------------------------------------------------------------------ |
+| Date           | December 4th, 2025                                                                  |
+| Target         | pizza.princecal.click                                                       |
+| Classification | Identification and Authentication Failures                                                                      |
+| Severity       | 4                                                                              |
+| Description    | Admin Account Stolen.  All user data destroyed. List of user emails probably stolen.  Admin User Destroyed.             |
+| Images         | ![No users](noUsers.png) <br/> All Users have been destroyed. |
+| Corrections    | Adjust Admin user so that the password is no longer admin.                                                       |
+
 # Peer attack
 
 ## Damon Stevens' attack on Corwyn Giles
@@ -103,3 +114,16 @@ Damon Stevens & Corwyn Giles
 | Description    | Attempted to inject sql statements into the token with multiple requests. Injection failed  |
 
 ## Corwyn Giles' attack on Damon Stevens
+| Item           | Result                                                                         |
+| -------------- | ------------------------------------------------------------------------------ |
+| Date           | December 5th, 2025                                                                  |
+| Target         | pizza.cs329blaze.click                                                       |
+| Classification | Injection                                                                     |
+| Severity       | 0                                                                              |
+| Description    | SQL Database Injection failed due to databaser rejecting multiple commands.            |
+| Images         | ![failed access](failed.png) <br/> Admin access not granted |
+| Corrections    | Adjust update users endpoint to no longer allow sql injection                                                      |
+
+
+# Learnings
+The main takeaway from this for me was how many vectors of attack there are that you need to be aware of when designing a service. You need to think outside of the box and be proactive in security, as if there is a hole in your security that you did not think of, hackers will find it and exploit it. I definitely understand why Cybersecurity is its own dedicated major, with how many scenarios there are for attacks. I also understand why every developer needs to be security minded though, as it is much easier to build a project which is secure than patch holes in security once they are discovered. 
